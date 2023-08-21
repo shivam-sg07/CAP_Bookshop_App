@@ -1,35 +1,50 @@
 {
-  "name": "HANAApp",
-  "version": "1.0.0",
-  "description": "A simple CAP project.",
-  "repository": "<Add your repository here>",
-  "license": "UNLICENSED",
-  "private": true,
-  "dependencies": {
-    "@sap/cds": "^7",
-    "express": "^4",
-    "@sap/cds-hana": "^2"
-  },
-
-  "scripts": {
-    "start": "cds-serve"
-  },
-  "cds": {
-    "build": {
-        "tasks": [
-            {
-                "for": "hana",
-                "dest": "../db"
-            },
-            {
-                "for": "node-cf"
-            }
-        ]
+    "name": "HANAApp",
+    "version": "1.0.0",
+    "description": "A simple CAP project.",
+    "repository": "<Add your repository here>",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@sap/cds": "^7",
+        "@sap/cds-hana": "^2",
+        "@sap/hana-client": "^2.17.22",
+        "express": "^4"
     },
-    "requires": {
-        "db": {
-            "kind": "hana-cloud"
+    "scripts": {
+        "start": "cds-serve",
+        "watch-frontend": "cds watch --open frontend/webapp/index.html?sap-ui-xx-viewCache=false",
+        "undeploy": "cf undeploy HANAApp --delete-services --delete-service-keys --delete-service-brokers",
+        "build": "rimraf resources mta_archives && mbt build --mtar archive",
+        "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    },
+    "cds": {
+        "build": {
+            "tasks": [
+                {
+                    "for": "hana",
+                    "dest": "../db"
+                },
+                {
+                    "for": "node-cf"
+                }
+            ]
+        },
+        "requires": {
+            "db": {
+                "kind": "hana-cloud"
+            }
+        },
+        "hana": {
+            "deploy-format": "hdbtable"
         }
-    }
-}
+    },
+    "devDependencies": {
+        "@sap/hdi-deploy": "4.8.0",
+        "@sap/ux-specification": "^1.108.11",
+        "rimraf": "^3.0.2"
+    },
+    "sapux": [
+        "app/frontend"
+    ]
 }
